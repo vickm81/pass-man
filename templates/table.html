@@ -1,0 +1,18 @@
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Website</th>
+            <th>Username</th>
+            <th>Password</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for password in passwords %}
+        <tr>
+            <td>{{ password.website }}</td>
+            <td>{{ password.username }} <i class="fa-solid fa-copy copy-btn" data-type="username" data-value="{{password.username}}"></i></td>
+            <td>{{ password.password }} <i class="fa-solid fa-copy copy-btn" data-type="username" data-value="{{password.password}}"></i></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

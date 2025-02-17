@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+     <link rel="stylesheet" href="static/fontawesome/all.css">
+
+
+</head>
+<body>
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="liveToast" class="toast" role="alert">
+      <div class="toast-header">
+        <strong class="me-auto">Notification</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+      </div>
+      <div class="toast-body">Password saved successfully!</div>
+    </div>
+  </div>
+  
+  <div class="container w-65">
+    <i class="fa-solid fa-right-from-bracket fa-xl" id="logout"></i>
+  </div>
+    <div class="container w-65 cont">
+      <h3>Welcome, {{ session['username'] }}</h3>
+      <h3>Your Saved Passwords</h3>
+      <div class="mb-4" hx-get="/get_passwords" hx-trigger="load" id="#password-list">
+        <p>Loading passwords...</p>
+      </div>
+
+      <h3>Add New Password</h3>
+      <form id="add-password-form">
+        <div class="mb-3">
+          <input type="text" class="form-control" id="website" placeholder="Website">
+        </div>
+        <div class="mb-3">
+          <input type="text" class="form-control" id="username" placeholder="Username">
+        </div>	
+        <div class="mb-3">
+          <div class="input-group">
+              <input type="password" class="form-control" id="password" placeholder="Password">
+              <button type="button" class="btn btn-secondary" id="generate-password">Generate</button>
+          </div>
+      </div>
+      
+        
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+
+    </div>
+    <script src="/static/dashboard.js"></script>
+    <script src="/static/htmx.min.js"></script>
+    <script src="/static/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
