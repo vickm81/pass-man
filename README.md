@@ -1,4 +1,4 @@
-# Password Manager Browser Extension
+# Pass Man
 
 A secure, self-hosted **password manager** with **autofill capabilities** for Chromium-based browsers. This project is designed to securely store credentials and automatically fill login fields.
 
@@ -12,7 +12,7 @@ A secure, self-hosted **password manager** with **autofill capabilities** for Ch
 ## 🛠️ Installation (Using Docker)
 ### 1️⃣ **Pull the Docker Image**
 ```sh
-docker pull vickm81/password-manager
+docker pull vickm81/pass-man
 ```
 
 ### 2️⃣ **Run the Container**
