@@ -307,5 +307,44 @@ def handle_credentials():
         app.logger.error(f"Unexpected error: {e}")
         return jsonify({'error': 'Internal server error'}), 500
 
+@app.route('/delete_password', methods=['POST'])
+def delete_password():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    user_id = session['user_id']
+    data = request.json
+    website = data.get('website')
+    username = data.get('username')
+
+
+    if not website or not username:
+        return jsonify({'error': 'Missing fields'}), 400
+
+    # Retrieve the user’s master password for decryption
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    master_password = user.master_password
+
+    # Find the password entry
+    stored_passwords = Password.query.filter_by(user_id=user_id).all()
+    for stored_pass in stored_passwords:
+        try:
+            decrypted_website = decrypt_password(stored_pass.website, master_password).decode()
+            decrypted_username = decrypt_password(stored_pass.username, master_password).decode()
+
+            if decrypted_website == website and decrypted_username == username:
+                db.session.delete(stored_pass)
+                db.session.commit()
+                return jsonify({'message': 'Password deleted successfully'}), 200
+
+        except Exception as e:
+            app.logger.error(f"Error processing password deletion: {e}")
+
+    return jsonify({'error': 'Password entry not found'}), 404
+
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -4,6 +4,7 @@
             <th>Website</th>
             <th>Username</th>
             <th>Password</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -12,7 +13,42 @@
             <td>{{ password.website }}</td>
             <td>{{ password.username }} <i class="fa-solid fa-copy copy-btn" data-type="username" data-value="{{password.username}}"></i></td>
             <td>{{ password.password }} <i class="fa-solid fa-copy copy-btn" data-type="username" data-value="{{password.password}}"></i></td>
+            <td><button class="btn btn-primary" onclick="deletePassword('{{password.website}}', '{{password.username}}')">Delete</button>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+<script>
+    function deletePassword(website, username) {
+    // Store values for deletion
+    window.deleteWebsite = website;
+    window.deleteUsername = username;
+
+    // Show Bootstrap confirmation modal
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+    deleteModal.show();
+
+    // Handle delete confirmation
+    document.getElementById("confirmDeleteBtn").onclick = function() {
+        fetch('/delete_password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ website: window.deleteWebsite, username: window.deleteUsername })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error); // Replace with a Bootstrap alert if needed
+            } else {
+                location.reload();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+
+        // Hide modal after confirmation
+        deleteModal.hide();
+    };
+}
+
+</script>
