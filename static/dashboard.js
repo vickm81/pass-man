@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok) {
                 toast.show();
-                addPasswordForm.reset();
+                location.reload();
             } else {
                 alert("Failed to add password!");
             }
