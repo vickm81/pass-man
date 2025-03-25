@@ -31,7 +31,7 @@ The browser extension can be found at https://github.com/vickm81/pass-man-ext
 ## 🔐 Usage
 1. **Register/Login** with your master password
 2. **Save passwords** securely in the vault
-3. **Autofill credentials** when visiting a saved website
+3. **Autofill credentials** when visiting a saved website by clicking on the extension
 
 ## 📦 Building the Docker Image (For Development)
 If you want to modify the project, build your own Docker image:

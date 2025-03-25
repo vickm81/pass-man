@@ -1,30 +1,53 @@
-<!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="/static/styles.css">
-    <link rel="stylesheet" href="/static/bootstrap.min.css">
+{% extends "base.html" %}
 
-</head>
-<body>
-    <div class="container cont cent w-50">
-        <h1>Register</h1>
-        <form action="/register" method="POST">
+{% block title %}Register - PassMan{% endblock %}
 
-            <div class="cent mb-4">
-              <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Register</h2>
+                <form action="/register" method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="master_password" class="form-label">Master Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="master_password" name="master_password" required>
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">Your master password will be used to encrypt and decrypt your saved passwords.</div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="/">Login</a></p>
+                </div>
             </div>
-
-            <div class="cent mb-4">
-              <input type="password" class="form-control" id="master_password" name="master_password" placeholder="Password">
-            </div>
-
-            <button type="submit" class="btn btn-primary">Register</button>
-          </form>
-        <p>Already have an account? <a href="/">Login here</a></p>
+        </div>
     </div>
-    <script src="/static/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePasswordBtn = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('master_password');
+
+        togglePasswordBtn.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePasswordBtn.querySelector('i').classList.toggle('bi-eye');
+            togglePasswordBtn.querySelector('i').classList.toggle('bi-eye-slash');
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}
