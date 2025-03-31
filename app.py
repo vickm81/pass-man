@@ -17,10 +17,15 @@ app = Flask(__name__)
 app.secret_key = "your_secret_key"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///password_manager.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-CORS(app, supports_credentials=True)
 logging.basicConfig(level=logging.DEBUG)
 bcrypt = Bcrypt(app)  # Initialize bcrypt
 db.init_app(app)
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["chrome-extension://nabilbgijbgjlijicjnknmifpgnlpfek"],
+        "supports_credentials": True
+    }
+})
 
 @app.before_request
 def create_tables():

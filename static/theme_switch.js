@@ -1,10 +1,17 @@
        // Theme switching logic
        const themeSwitch = document.getElementById('themeSwitch');
        const htmlTag = document.documentElement;
+       themeIcon = document.getElementById('theme-icon')
 
        // Check for saved theme preference or system preference
        const savedTheme = localStorage.getItem('theme');
        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function updateThemeIcon() {
+            const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            themeIcon.classList.toggle('bi-moon-fill', isDark);
+            themeIcon.classList.toggle('bi-sun-fill', !isDark);
+        }
 
        // Set initial theme
        function setInitialTheme() {
@@ -19,6 +26,7 @@
 
            htmlTag.setAttribute('data-bs-theme', theme);
            themeSwitch.checked = theme === 'dark';
+           updateThemeIcon();
        }
 
        // Initial theme setup
@@ -29,6 +37,7 @@
            const newTheme = themeSwitch.checked ? 'dark' : 'light';
            htmlTag.setAttribute('data-bs-theme', newTheme);
            localStorage.setItem('theme', newTheme);
+           updateThemeIcon();
        });
 
        // Listen for system theme changes
