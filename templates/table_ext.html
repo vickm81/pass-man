@@ -9,7 +9,7 @@
     </thead>
     <tbody>
         {% for password in passwords %}
-        <tr data-id="{{ password.id }}">
+        <tr>
             <td>{{ password.website }}</td>
             <td>{{ password.username }}</td>
             <td>
@@ -21,17 +21,9 @@
                 </button>
             </td>
             <td>
-                <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-primary copy-credentials" type="button">
-                        <i class="bi bi-clipboard"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-warning edit-password" type="button">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger delete-password" type="button">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
+                <button class="btn btn-sm btn-outline-primary copy-credentials" type="button">
+                    <i class="bi bi-clipboard"></i>
+                </button>
             </td>
         </tr>
         {% endfor %}

@@ -76,6 +76,45 @@
         </div>
     </div>
 </div>
+
+<!-- Edit Password Modal -->
+<div class="modal fade" id="editPasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPasswordForm">
+                    <input type="hidden" id="edit_id">
+                    <div class="mb-3">
+                        <label for="edit_website" class="form-label">Website</label>
+                        <input type="text" class="form-control" id="edit_website" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="edit_username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="edit_password" required>
+                            <button class="btn btn-outline-secondary" type="button" id="toggleEditPassword">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-secondary" type="button" id="generateEditPasswordBtn">
+                                <i class="bi bi-key me-2"></i>Generate
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="/static/dashboard.js"></script>
 
 {% endblock %}

@@ -88,6 +88,7 @@ def get_passwords():
 
     passwords = [
         {
+            'id': p.id,  # Include the ID
             'website': decrypt_password(p.website, master_password).decode(),
             'username': decrypt_password(p.username, master_password).decode(),
             'password': decrypt_password(p.password, master_password).decode(),
@@ -95,6 +96,25 @@ def get_passwords():
         for p in user_passwords
     ]
     return render_template("table.html", passwords=passwords)
+
+@app.route('/get_passwords_ext',methods=['GET'])
+def get_passwords_ext():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    user_id = session['user_id']
+    user_passwords = Password.query.filter_by(user_id=user_id).all()
+    master_password = User.query.get(user_id).master_password
+
+    passwords = [
+        {
+            'website': decrypt_password(p.website, master_password).decode(),
+            'username': decrypt_password(p.username, master_password).decode(),
+            'password': decrypt_password(p.password, master_password).decode(),
+        }
+        for p in user_passwords
+    ]
+    return render_template("table_ext.html",passwords=passwords)
 
 @app.route('/get_credentials', methods=['GET'])
 def get_credentials():
@@ -312,6 +332,40 @@ def handle_credentials():
         app.logger.error(f"Unexpected error: {e}")
         return jsonify({'error': 'Internal server error'}), 500
 
+
+
+@app.route('/update_password', methods=['POST'])
+def update_password():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    user_id = session['user_id']
+    data = request.json
+    credential_id = data.get('id')
+    website = data.get('website')
+    username = data.get('username')
+    password = data.get('password')
+
+    if not all([credential_id, website, username, password]):
+        return jsonify({'error': 'Missing fields'}), 400
+
+    # Get the credential to update
+    credential = Password.query.filter_by(id=credential_id, user_id=user_id).first()
+    if not credential:
+        return jsonify({'error': 'Credential not found'}), 404
+
+    # Encrypt the updated data
+    master_password = User.query.get(user_id).master_password
+    try:
+        credential.website = encrypt_password(website, master_password)
+        credential.username = encrypt_password(username, master_password)
+        credential.password = encrypt_password(password, master_password)
+        db.session.commit()
+        return jsonify({'message': 'Password updated successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/delete_password', methods=['POST'])
 def delete_password():
     if 'username' not in session:
@@ -319,37 +373,23 @@ def delete_password():
 
     user_id = session['user_id']
     data = request.json
-    website = data.get('website')
-    username = data.get('username')
+    credential_id = data.get('id')
 
+    if not credential_id:
+        return jsonify({'error': 'Missing credential ID'}), 400
 
-    if not website or not username:
-        return jsonify({'error': 'Missing fields'}), 400
+    # Get the credential to delete
+    credential = Password.query.filter_by(id=credential_id, user_id=user_id).first()
+    if not credential:
+        return jsonify({'error': 'Credential not found'}), 404
 
-    # Retrieve the user’s master password for decryption
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({'error': 'User not found'}), 404
-
-    master_password = user.master_password
-
-    # Find the password entry
-    stored_passwords = Password.query.filter_by(user_id=user_id).all()
-    for stored_pass in stored_passwords:
-        try:
-            decrypted_website = decrypt_password(stored_pass.website, master_password).decode()
-            decrypted_username = decrypt_password(stored_pass.username, master_password).decode()
-
-            if decrypted_website == website and decrypted_username == username:
-                db.session.delete(stored_pass)
-                db.session.commit()
-                return jsonify({'message': 'Password deleted successfully'}), 200
-
-        except Exception as e:
-            app.logger.error(f"Error processing password deletion: {e}")
-
-    return jsonify({'error': 'Password entry not found'}), 404
-
+    try:
+        db.session.delete(credential)
+        db.session.commit()
+        return jsonify({'message': 'Password deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
