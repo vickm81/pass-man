@@ -9,16 +9,14 @@ from urllib.parse import urlparse
 import re
 from datetime import datetime
 import logging
-from flask_bcrypt import Bcrypt
-
-
+from argon2 import PasswordHasher, exceptions  # Replace bcrypt with argon2
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///password_manager.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 logging.basicConfig(level=logging.DEBUG)
-bcrypt = Bcrypt(app)  # Initialize bcrypt
+ph = PasswordHasher()  # Initialize Argon2 password hasher
 db.init_app(app)
 CORS(app, resources={
     r"/api/*": {
@@ -46,8 +44,8 @@ def register():
         if User.query.filter_by(username=username).first():
             return "User already exists!", 400
         
-        # Hash the master password before storing it
-        hashed_password = bcrypt.generate_password_hash(master_password).decode('utf-8')
+        # Hash the master password with Argon2 before storing it
+        hashed_password = ph.hash(master_password)
 
         new_user = User(username=username, master_password=hashed_password)
         db.session.add(new_user)
@@ -64,10 +62,19 @@ def login():
 
     user = User.query.filter_by(username=username).first()  # Get user from DB
 
-    if user and bcrypt.check_password_hash(user.master_password, master_password):
-        session['username'] = username
-        session['user_id'] = user.id
-        return redirect(url_for('dashboard'))
+    if user:
+        try:
+            # Verify the password using Argon2
+            if ph.verify(user.master_password, master_password):
+                session['username'] = username
+                session['user_id'] = user.id
+                return redirect(url_for('dashboard'))
+        except exceptions.VerifyMismatchError:
+            pass  # Password doesn't match
+        except exceptions.VerificationError:
+            pass  # Other verification error (e.g., hash format invalid)
+        except exceptions.InvalidHash:
+            pass  # Hash is invalid
 
     return "Invalid credentials!", 400
 
