@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 import re
 from datetime import datetime
 import logging
-from argon2 import PasswordHasher, exceptions  # Replace bcrypt with argon2
+from argon2 import PasswordHasher, exceptions 
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"

@@ -7,82 +7,21 @@
     <!-- Bootstrap CSS -->
     <link href="/static/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        /* Custom theme styles */
-        :root {
-            --primary-bg-light: #ffffff;
-            --primary-text-light: #000000;
-            --primary-bg-dark: #121212;
-            --primary-text-dark: #e0e0e0;
-            --navbar-bg-light: #f8f9fa;
-            --navbar-bg-dark: #333333;
-            --navbar-text-light: #000000;
-            --navbar-text-dark: #ffffff;
-            --card-bg-light: #f8f9fa;
-            --card-bg-dark: #1e1e1e;
-        }
-
-        body {
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        /* Dark mode styles */
-        [data-bs-theme="dark"] {
-            background-color: var(--primary-bg-dark);
-            color: var(--primary-text-dark);
-        }
-
-        [data-bs-theme="dark"] .navbar {
-            background-color: var(--navbar-bg-dark) !important;
-            color: var(--navbar-text-dark) !important;
-        }
-
-        [data-bs-theme="dark"] .navbar-brand,
-        [data-bs-theme="dark"] .navbar-nav .nav-link {
-            color: var(--navbar-text-dark) !important;
-        }
-
-        [data-bs-theme="dark"] .card {
-            background-color: var(--card-bg-dark);
-            color: var(--primary-text-dark);
-            border-color: #444;
-        }
-
-        /* Light mode styles */
-        [data-bs-theme="light"] {
-            background-color: var(--primary-bg-light);
-            color: var(--primary-text-light);
-        }
-
-        [data-bs-theme="light"] .navbar {
-            background-color: var(--navbar-bg-light) !important;
-            color: var(--navbar-text-light) !important;
-        }
-
-        [data-bs-theme="light"] .navbar-brand,
-        [data-bs-theme="light"] .navbar-nav .nav-link {
-            color: var(--navbar-text-light) !important;
-        }
-
-        [data-bs-theme="light"] .card {
-            background-color: var(--card-bg-light);
-            color: var(--primary-text-light);
-            border-color: #ddd;
-        }
-
-        .theme-toggle {
-            cursor: pointer;
-        }
-    </style>
+   <link rel="stylesheet" href="/static/styles.css">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light border-bottom border-body">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">PassMan</a>
+            <!-- Logo Replacement -->
+            <a class="navbar-brand" href="/">
+                <img src="/static/passman.png" alt="PassMan" height="50" class="d-inline-block align-top">
+            </a>
+            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     {% if 'username' in session %}
@@ -103,6 +42,7 @@
                     </li>
                     {% endif %}
                 </ul>
+                
                 <div class="form-check form-switch">
                     <input class="form-check-input theme-toggle" type="checkbox" id="themeSwitch">
                     <label class="form-check-label" for="themeSwitch">
