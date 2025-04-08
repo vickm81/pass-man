@@ -242,11 +242,6 @@ def handle_credentials():
     if request.method == 'OPTIONS':
         return '', 200
     
-    # Log request details
-    app.logger.debug(f"Headers: {dict(request.headers)}")
-    app.logger.debug(f"Cookies: {dict(request.cookies)}")
-    app.logger.debug(f"Session: {dict(session)}")
-    
     # Check authentication
     if 'username' not in session:
         app.logger.debug("No user session found")

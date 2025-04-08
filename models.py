@@ -15,6 +15,4 @@ class Password(db.Model):
     username = db.Column(db.String(255), nullable=False)
     password = db.Column(db.String(255), nullable=False)
     salt = db.Column(db.LargeBinary, nullable=False)
-    last_used = db.Column(db.DateTime, nullable=True)
-
 
