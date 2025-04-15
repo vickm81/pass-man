@@ -18,8 +18,10 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-body">
-                <!-- <h2 class="card-title">Password Manager</h2> -->
                 <div class="row">
+                    <div class="col-md-8">
+                        <h4>Welcome, {{ username }}</h4>
+                    </div>
                     <div class="col-md-4 mb-2">
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPasswordModal">
                             <i class="bi bi-plus-circle me-2"></i>Add Password
@@ -50,13 +52,16 @@
             </div>
             <div class="modal-body">
                 <form id="addPasswordForm">
+                    <!-- CSRF Token -->
+                    <input type="hidden" name="csrf_token" id="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label for="website" class="form-label">Website</label>
-                        <input type="text" class="form-control" id="website" required>
+                        <input type="text" class="form-control" id="website" required >
+                        <div class="form-text">Enter website URL</div>
                     </div>
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" required>
+                        <input type="text" class="form-control" id="username" required maxlength="255">
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
@@ -70,6 +75,7 @@
                             </button>
                         </div>
                     </div>
+                    <div class="alert alert-danger d-none" id="addFormError"></div>
                     <button type="submit" class="btn btn-primary">Save Password</button>
                 </form>
             </div>
@@ -87,14 +93,17 @@
             </div>
             <div class="modal-body">
                 <form id="editPasswordForm">
+                    <!-- CSRF Token -->
+                    <input type="hidden" name="csrf_token" id="edit_csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" id="edit_id">
                     <div class="mb-3">
                         <label for="edit_website" class="form-label">Website</label>
-                        <input type="text" class="form-control" id="edit_website" required>
+                        <input type="url" class="form-control" id="edit_website" required>
+                        <div class="form-text">Enter full URL including http:// or https://</div>
                     </div>
                     <div class="mb-3">
                         <label for="edit_username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="edit_username" required>
+                        <input type="text" class="form-control" id="edit_username" required maxlength="255">
                     </div>
                     <div class="mb-3">
                         <label for="edit_password" class="form-label">Password</label>
@@ -108,6 +117,7 @@
                             </button>
                         </div>
                     </div>
+                    <div class="alert alert-danger d-none" id="editFormError"></div>
                     <button type="submit" class="btn btn-primary">Update Password</button>
                 </form>
             </div>
@@ -115,6 +125,160 @@
     </div>
 </div>
 
+<!-- Delete Password Confirmation Modal -->
+<div class="modal fade" id="deletePasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><b>Confirm Deletion</b></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this password entry?</p>
+                <p><strong>Website:</strong> <span id="delete_website"></span></p>
+                <p><strong>Username:</strong> <span id="delete_username"></span></p>
+                <form id="deletePasswordForm">
+                    <input type="hidden" name="csrf_token" id="delete_csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" id="delete_id">
+                    <div class="alert alert-danger d-none" id="deleteFormError"></div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Session timeout warning modal -->
+<div class="modal fade" id="sessionTimeoutModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><b>Session About to Expire</b></h5>
+            </div>
+            <div class="modal-body">
+                <p>Your session will expire in <span id="sessionCountdown">60</span> seconds due to inactivity.</p>
+                <p>Do you want to stay logged in?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="extendSessionBtn">Yes, Keep Me Logged In</button>
+                <button type="button" class="btn btn-secondary" id="logoutNowBtn">Logout Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom JavaScript for the Dashboard -->
 <script src="/static/dashboard.js"></script>
+
+<!-- Add this script to enhance security on the client side -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        
+        // Session timeout handling - monitor inactivity
+        let inactivityTime = 0;
+        const inactivityInterval = 60000; // Check every minute
+        const warningTime = 1500000; // Show warning after 25 minutes (30 min session - 5 min warning)
+        let sessionTimer;
+        let countdownTimer;
+        
+        function resetInactivityTimer() {
+            clearTimeout(sessionTimer);
+            inactivityTime = 0;
+            
+            sessionTimer = setTimeout(function checkInactivity() {
+                inactivityTime += inactivityInterval;
+                
+                if (inactivityTime >= warningTime) {
+                    showSessionWarning();
+                } else {
+                    sessionTimer = setTimeout(checkInactivity, inactivityInterval);
+                }
+            }, inactivityInterval);
+        }
+        
+        function showSessionWarning() {
+            const sessionModal = new bootstrap.Modal(document.getElementById('sessionTimeoutModal'));
+            sessionModal.show();
+            
+            let countdown = 60; // 60 second countdown
+            const countdownElement = document.getElementById('sessionCountdown');
+            
+            countdownTimer = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownTimer);
+                    // Session expired, log the user out
+                    logout();
+                }
+            }, 1000);
+        }
+        
+        document.getElementById('extendSessionBtn').addEventListener('click', function() {
+            // Send a request to the server to extend the session
+            fetch('/api/extend-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.getElementById('csrf_token').value
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Hide the warning modal
+                    const sessionModal = bootstrap.Modal.getInstance(document.getElementById('sessionTimeoutModal'));
+                    sessionModal.hide();
+                    
+                    // Reset the inactivity timer
+                    clearInterval(countdownTimer);
+                    resetInactivityTimer();
+                } else {
+                    // If there was an error extending the session, log the user out
+                    logout();
+                }
+            })
+            .catch(() => {
+                // On error, log the user out
+                logout();
+            });
+        });
+        
+        document.getElementById('logoutNowBtn').addEventListener('click', function() {
+            logout();
+        });
+        
+        function logout() {
+            // Create a form to submit POST request
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/logout';
+            
+            // Add CSRF token
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrf_token';
+            csrfInput.value = document.getElementById('csrf_token').value;
+            form.appendChild(csrfInput);
+            
+            // Submit the form
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        // Monitor user activity to reset the inactivity timer
+        ['mousemove', 'keypress', 'click', 'touchstart', 'scroll'].forEach(event => {
+            document.addEventListener(event, resetInactivityTimer, true);
+        });
+        
+        // Initialize the inactivity timer
+        resetInactivityTimer();
+    });
+</script>
 
 {% endblock %}

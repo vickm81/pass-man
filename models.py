@@ -14,5 +14,3 @@ class Password(db.Model):
     website = db.Column(db.String(255), nullable=False)
     username = db.Column(db.String(255), nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    salt = db.Column(db.LargeBinary, nullable=False)
-

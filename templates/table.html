@@ -16,19 +16,16 @@
                 <span class="password-cell" data-password="{{ password.password }}">
                     ••••••••
                 </span>
-                <button class="btn btn-sm btn-outline-secondary toggle-password" type="button">
+                <button class="btn btn-sm btn-outline-secondary toggle-password" type="button" data-bs-toggle="tooltip" title="Show/Hide Password">
                     <i class="bi bi-eye"></i>
                 </button>
             </td>
             <td>
                 <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-primary copy-credentials" type="button">
-                        <i class="bi bi-clipboard"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-warning edit-password" type="button">
+                    <button class="btn btn-sm btn-outline-warning edit-password" type="button" data-bs-toggle="tooltip" title="Edit Password">
                         <i class="bi bi-pencil"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-danger delete-password" type="button">
+                    <button class="btn btn-sm btn-outline-danger delete-password" type="button" data-bs-toggle="tooltip" title="Delete Password">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -37,3 +34,13 @@
         {% endfor %}
     </tbody>
 </table>
+
+<script>
+// Initialize Bootstrap tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
