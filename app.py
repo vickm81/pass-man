@@ -15,6 +15,7 @@ from markupsafe import escape
 import bleach
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from functools import wraps
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -90,6 +91,14 @@ def sanitize_input(data):
         return escape(cleaned)
     return data
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session:
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route('/')
 def index():
     if 'username' in session:
@@ -125,7 +134,7 @@ def register():
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
-@limiter.limit("10/minute")  # Rate limit login attempts
+@limiter.limit("10/minute")
 def login():
     if request.method == 'GET':
         return render_template('index.html')
@@ -134,38 +143,36 @@ def login():
     master_password = request.form.get('master_password', '')
 
     if not username or not master_password:
-        return "Username and password are required", 400
+        error = "Username and password are required"
+        return render_template('index.html', error=error)
 
-    user = User.query.filter_by(username=username).first()  # Get user from DB
+    user = User.query.filter_by(username=username).first()
 
     if user:
         try:
-            # Verify the password using Argon2
             if ph.verify(user.master_password, master_password):
-                session.clear()  # Clear any existing session
+                session.clear()
                 session['username'] = username
                 session['user_id'] = user.id
                 session['last_activity'] = datetime.utcnow().timestamp()
-                
-                # Regenerate session ID to prevent session fixation
                 session.modified = True
-                
                 return redirect(url_for('dashboard'))
         except (exceptions.VerifyMismatchError, exceptions.VerificationError, exceptions.InvalidHash):
-            # Log failed login attempt but don't reveal specifics to potential attackers
             logging.warning(f"Failed login attempt for user: {username}")
             pass
 
-    # Use consistent error message that doesn't reveal if username exists
-    return "Invalid credentials!", 401
+    error = "Invalid credentials!"
+    return render_template('index.html', error=error)
 
 @app.route('/dashboard')
+@login_required
 def dashboard():
     if 'username' not in session:
         return redirect(url_for('index'))
     return render_template('dashboard.html', username=escape(session['username']))
 
 @app.route('/get_passwords', methods=['GET'])
+@login_required
 def get_passwords():
     if 'username' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -237,6 +244,7 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route('/add_password', methods=['POST'])
+@login_required
 def add_password():
     if 'username' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -281,6 +289,7 @@ def add_password():
         return jsonify({'error': 'Failed to add password'}), 500
 
 @app.route('/generate_password', methods=['GET'])
+@login_required
 def generate_password():
     try:
         length = int(request.args.get('length', 12))
@@ -407,6 +416,7 @@ def handle_credentials():
         return jsonify({'error': 'Internal server error'}), 500
 
 @app.route('/update_password', methods=['POST'])
+@login_required
 def update_password():
     if 'username' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -448,6 +458,7 @@ def update_password():
         return jsonify({'error': 'Failed to update password'}), 500
 
 @app.route('/delete_password', methods=['POST'])
+@login_required
 def delete_password():
     if 'username' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -488,7 +499,7 @@ def internal_server_error(e):
 # Security headers middleware with fixes for Bootstrap icons
 @app.after_request
 def add_security_headers(response):
-    response.headers['Content-Security-Policy'] = "default-src 'self'; " \
+    response.headers['Content-Security-Policy'] = "default-src 'self' https:; " \
                                                 "script-src 'self' https://cdn.jsdelivr.net; " \
                                                 "style-src 'self' https://cdn.jsdelivr.net; " \
                                                 "img-src 'self' data:; " \
@@ -504,10 +515,4 @@ def add_security_headers(response):
     return response
 
 if __name__ == '__main__':
-    # Run in debug mode only in development
-    debug_mode = os.environ.get('FLASK_ENV') == 'development'
-    # Always use HTTPS in production
-    ssl_context = None
-    if os.environ.get('FLASK_ENV') == 'production':
-        ssl_context = 'adhoc'  # Generates a self-signed cert for HTTPS
-    app.run(debug=debug_mode, ssl_context=ssl_context)
+    app.run(host='0.0.0.0', port=5000, ssl_context=('certs/cert.pem', 'certs/key.pem'))

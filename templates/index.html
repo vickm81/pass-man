@@ -8,6 +8,14 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <h2 class="card-title text-center mb-4">Login</h2>
+                
+                <!-- Add error message display here -->
+                {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endif %}
+                
                 <form action="/login" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
