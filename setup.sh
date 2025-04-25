@@ -47,12 +47,9 @@ case $OS in
     fedora)
         echo "Installing Docker on Fedora..."
         
-        # Install required packages
-        dnf -y install dnf-plugins-core
-        
         # Add Docker repository
-        dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-        
+        sudo curl -o /etc/yum.repos.d/docker-ce.repo https://download.docker.com/linux/fedora/docker-ce.repo
+
         # Install Docker Engine
         dnf install -y docker-ce docker-ce-cli containerd.io
         ;;
