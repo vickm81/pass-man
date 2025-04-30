@@ -13,6 +13,7 @@ if %errorlevel% neq 0 (
     echo WSL is not installed. Enabling required features...
     dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
     dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+    wsl --install
     echo.
     echo ✅ WSL features enabled. Please restart your computer to complete setup and run the script again.
     pause
@@ -65,19 +66,7 @@ if %errorlevel% neq 0 (
         echo Found Docker at default location. Adding to PATH for this session...
         set "PATH=%PATH%;C:\Program Files\Docker\Docker\resources\bin"
     )
-    :: Check if Docker CLI is in PATH now
-    where docker >nul 2>&1
-    if %errorlevel% neq 0 (
-        echo.
-        echo ⚠️ Docker command still not found. Please ensure Docker Desktop is installed correctly
-        echo and either:
-        echo   1. Restart your computer to refresh environment variables, or
-        echo   2. Run this script from a new command prompt
-        echo.
-        pause
-        goto CHECK_DOCKER_RUNNING_CONTINUE
     )
-)
 
 :waitloop
 docker info >nul 2>&1
