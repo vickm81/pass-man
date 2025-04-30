@@ -9,19 +9,35 @@ A secure, self-hosted **password manager** with **autofill capabilities** for Ch
 - **Dockerized** for easy deployment
 - Self-hosted with **Flask backend**
 
-## 🛠️ Installation (Using Docker)
-### 1️⃣ **Pull the Docker Image**
-```sh
-docker pull vickm81/pass-man
-```
+## 🛠️ Installation
 
-### 2️⃣ **Run the Container**
-```sh
-docker run -d -p 5000:5000 --name pass-man vickm81/pass-man
-```
-This will start the password manager on `http://localhost:5000`.
+### 📦 Quick Setup (Ubuntu / Fedora / Windows)
 
-### 3️⃣ **Load the Browser Extension**
+To get started, **you only need the setup script** for your platform. The script will handle:
+- Installing Docker (if not already installed)
+- Pulling the Pass Man Docker image
+- Starting the container on `http://localhost:5000`
+
+---
+
+### 💻 Linux (Ubuntu / Fedora)
+
+1. **Download the setup script**  
+   [Download `setup.sh`](https://raw.githubusercontent.com/vickm81/pass-man/main/setup.sh)
+
+2. Open a terminal and run:
+   ```sh
+   chmod +x setup.sh
+   sudo ./setup.sh
+
+### 🪟 Windows
+1. [Download Docker Desktop Installer](https://www.docker.com/products/docker-desktop/)
+
+2. **Download the setup script**
+
+3. **Right-click setup.bat → Run as Administrator**
+
+### 2️⃣ **Load the Browser Extension**
 The browser extension can be found at https://github.com/vickm81/pass-man-ext
 1. Open **Chrome** and go to `chrome://extensions/`
 2. Enable **Developer Mode** (toggle in the top-right corner)
