@@ -24,7 +24,7 @@ To get started, **you only need the setup script** for your platform. The script
 
 1. **Download the setup script**  
    ```sh
-   curl -O https://raw.githubusercontent.com/user/repo/main/setup.sh
+   curl -O https://raw.githubusercontent.com/vickm81/pass-man/main/setup.sh
 
 2. Open a terminal and run:
    ```sh
