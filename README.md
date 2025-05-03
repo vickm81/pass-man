@@ -23,7 +23,8 @@ To get started, **you only need the setup script** for your platform. The script
 ### 💻 Linux (Ubuntu / Fedora)
 
 1. **Download the setup script**  
-   [Download `setup.sh`](https://raw.githubusercontent.com/vickm81/pass-man/main/setup.sh)
+   ```sh
+   curl -O https://raw.githubusercontent.com/user/repo/main/scripts/setup.sh
 
 2. Open a terminal and run:
    ```sh
