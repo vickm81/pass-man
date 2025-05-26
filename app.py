@@ -75,8 +75,8 @@ def session_expiry_check():
             session['last_activity'] = datetime.utcnow().timestamp()
         else:
             last_activity = datetime.fromtimestamp(session['last_activity'])
-            # Log out after 30 minutes of inactivity
-            if (datetime.utcnow() - last_activity).total_seconds() > 1800:
+            # Log out after 2hrs of inactivity
+            if (datetime.utcnow() - last_activity).total_seconds() > 7200:
                 session.clear()
                 return redirect(url_for('index'))
             # Update last activity time
@@ -114,13 +114,18 @@ def register():
         
         # Input validation
         if not username or not master_password:
-            return "Username and password are required", 400
+            error = "Username and password are required"
+            return render_template('register.html', error=error)
+
             
         if len(master_password) < 12:
-            return "Master password must be at least 12 characters long", 400
+            error = "Master password must be at least 12 characters long"
+            return render_template('register.html', error=error)
+
             
         if User.query.filter_by(username=username).first():
-            return "User already exists!", 400
+            error = "User already exists!"
+            return render_template('register.html', error=error)
         
         # Hash the master password with Argon2 before storing it
         hashed_password = ph.hash(master_password)

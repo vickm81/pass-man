@@ -31,12 +31,20 @@ To get started, **you only need the setup script** for your platform. The script
    chmod +x setup.sh
    sudo ./setup.sh
 
+📺 **Watch the linux setup video**  
+[![Quick Setup Video](https://img.youtube.com/vi/fFgHkIixQ30/0.jpg)](https://www.youtube.com/watch?v=fFgHkIixQ30)
+
+
+
 ### 🪟 Windows
 1. [Download Docker Desktop Installer](https://www.docker.com/products/docker-desktop/)
 
 2. **Download the setup script**
 
 3. **Right-click setup.bat → Run as Administrator**
+
+📺 **Watch the windows setup video**  
+[![Quick Setup Video](https://img.youtube.com/vi/19k8imOoTas/0.jpg)](https://www.youtube.com/watch?v=19k8imOoTas)
 
 ### 2️⃣ **Load the Browser Extension**
 The browser extension can be found at https://github.com/vickm81/pass-man-ext

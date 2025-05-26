@@ -8,6 +8,11 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <h2 class="card-title text-center mb-4">Register</h2>
+                {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endif %}
                 <form action="/register" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 

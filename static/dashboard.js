@@ -8,7 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const addPasswordForm = document.getElementById('addPasswordForm');
     const generatePasswordBtn = document.getElementById('generatePasswordBtn');
     const togglePasswordBtn = document.getElementById('togglePassword');
+    const toggleEditPassword = document.getElementById('toggleEditPassword');
     const passwordInput = document.getElementById('password');
+    const passwordEditInput = document.getElementById('edit_password');
     
     // Request flag
     let isLoadingPasswords = false;
@@ -118,9 +120,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 const row = this.closest('tr');
                 const id = row.dataset.id;
                 const website = row.querySelector('td:nth-child(1)').textContent;
+                const username = row.querySelector('td:nth-child(2)').textContent;
+
                 
                 // Populate delete modal
                 document.getElementById('delete_id').value = escapeHtml(id);
+
+                document.getElementById('delete_username').textContent = escapeHtml(username);
                 document.getElementById('delete_website').textContent = escapeHtml(website);
                 
                 // Show confirmation modal
@@ -188,10 +194,31 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error:', error));
     });
 
+    generateEditPasswordBtn?.addEventListener('click', function() {
+        fetch('/generate_password?length=16', {
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            passwordEditInput.value = data.password;
+        })
+        .catch(error => console.error('Error:', error));
+    });
+    
     // Toggle password visibility
     togglePasswordBtn?.addEventListener('click', function() {
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordInput.setAttribute('type', type);
+        this.querySelector('i').classList.toggle('bi-eye');
+        this.querySelector('i').classList.toggle('bi-eye-slash');
+    });
+
+    toggleEditPassword?.addEventListener('click', function() {
+        const type = passwordEditInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordEditInput.setAttribute('type', type);
         this.querySelector('i').classList.toggle('bi-eye');
         this.querySelector('i').classList.toggle('bi-eye-slash');
     });

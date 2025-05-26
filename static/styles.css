@@ -113,3 +113,20 @@ a:hover {
 [data-bs-theme="dark"] .navbar-brand img {
     filter: brightness(0) invert(1);
 }
+
+/* Add this CSS to your stylesheet */
+.loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+#passwordTable.loading ~ .loading-spinner {
+    display: block;
+}
+
+/* Optional: Fade out the table content when loading */
+#passwordTable.loading {
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}

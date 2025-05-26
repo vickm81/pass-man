@@ -34,8 +34,17 @@
         <div class="card">
             <div class="card-body">
                 <h3 class="card-title mb-4">Saved Passwords</h3>
-                <div id="passwordTable">
-                    <!-- Passwords will be dynamically loaded here -->
+                <div id="passwordContainer" class="overflow-auto" style="max-height: 300px;">
+                    <div id="passwordTable">
+                        <!-- Passwords will be dynamically loaded here -->
+                    </div>
+                    <!-- Add this spinner right after your passwordTable div -->
+                    <div class="loading-spinner">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading passwords...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -172,113 +181,5 @@
 
 <!-- Custom JavaScript for the Dashboard -->
 <script src="/static/dashboard.js"></script>
-
-<!-- Add this script to enhance security on the client side -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        
-        
-        // Session timeout handling - monitor inactivity
-        let inactivityTime = 0;
-        const inactivityInterval = 60000; // Check every minute
-        const warningTime = 1500000; // Show warning after 25 minutes (30 min session - 5 min warning)
-        let sessionTimer;
-        let countdownTimer;
-        
-        function resetInactivityTimer() {
-            clearTimeout(sessionTimer);
-            inactivityTime = 0;
-            
-            sessionTimer = setTimeout(function checkInactivity() {
-                inactivityTime += inactivityInterval;
-                
-                if (inactivityTime >= warningTime) {
-                    showSessionWarning();
-                } else {
-                    sessionTimer = setTimeout(checkInactivity, inactivityInterval);
-                }
-            }, inactivityInterval);
-        }
-        
-        function showSessionWarning() {
-            const sessionModal = new bootstrap.Modal(document.getElementById('sessionTimeoutModal'));
-            sessionModal.show();
-            
-            let countdown = 60; // 60 second countdown
-            const countdownElement = document.getElementById('sessionCountdown');
-            
-            countdownTimer = setInterval(() => {
-                countdown--;
-                countdownElement.textContent = countdown;
-                
-                if (countdown <= 0) {
-                    clearInterval(countdownTimer);
-                    // Session expired, log the user out
-                    logout();
-                }
-            }, 1000);
-        }
-        
-        document.getElementById('extendSessionBtn').addEventListener('click', function() {
-            // Send a request to the server to extend the session
-            fetch('/api/extend-session', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': document.getElementById('csrf_token').value
-                },
-                credentials: 'same-origin'
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Hide the warning modal
-                    const sessionModal = bootstrap.Modal.getInstance(document.getElementById('sessionTimeoutModal'));
-                    sessionModal.hide();
-                    
-                    // Reset the inactivity timer
-                    clearInterval(countdownTimer);
-                    resetInactivityTimer();
-                } else {
-                    // If there was an error extending the session, log the user out
-                    logout();
-                }
-            })
-            .catch(() => {
-                // On error, log the user out
-                logout();
-            });
-        });
-        
-        document.getElementById('logoutNowBtn').addEventListener('click', function() {
-            logout();
-        });
-        
-        function logout() {
-            // Create a form to submit POST request
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/logout';
-            
-            // Add CSRF token
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = 'csrf_token';
-            csrfInput.value = document.getElementById('csrf_token').value;
-            form.appendChild(csrfInput);
-            
-            // Submit the form
-            document.body.appendChild(form);
-            form.submit();
-        }
-        
-        // Monitor user activity to reset the inactivity timer
-        ['mousemove', 'keypress', 'click', 'touchstart', 'scroll'].forEach(event => {
-            document.addEventListener(event, resetInactivityTimer, true);
-        });
-        
-        // Initialize the inactivity timer
-        resetInactivityTimer();
-    });
-</script>
 
 {% endblock %}
