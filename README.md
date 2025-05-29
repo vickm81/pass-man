@@ -48,9 +48,13 @@ To get started, **you only need the setup script** for your platform. The script
 
 ### 2️⃣ **Load the Browser Extension**
 The browser extension can be found at https://github.com/vickm81/pass-man-ext
+Open a terminal and run:
+   ```sh
+   git clone https://github.com/vickm81/pass-man-ext.git
+
 1. Open **Chrome** and go to `chrome://extensions/`
 2. Enable **Developer Mode** (toggle in the top-right corner)
-3. Click **Load unpacked** and select the `extension/` folder
+3. Click **Load unpacked** and select the `pass-man-ext/` folder
 4. The extension should now be installed and ready to use
 
 ## 🔐 Usage
