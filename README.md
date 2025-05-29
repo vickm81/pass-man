@@ -48,6 +48,7 @@ To get started, **you only need the setup script** for your platform. The script
 
 ### 2️⃣ **Load the Browser Extension**
 The browser extension can be found at https://github.com/vickm81/pass-man-ext
+
 Open a terminal and run:
    ```sh
    git clone https://github.com/vickm81/pass-man-ext.git
