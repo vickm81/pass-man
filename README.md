@@ -3,7 +3,7 @@
 A secure, self-hosted **password manager** with **autofill capabilities** for Chromium-based browsers. This project is designed to securely store credentials and automatically fill login fields.
 
 ## 🚀 Features
-- Securely store passwords using **zero-knowledge encryption**
+- Secure storage of passwords
 - Autofill credentials based on the **current website**
 - **Master password hashing** for secure authentication
 - **Dockerized** for easy deployment
