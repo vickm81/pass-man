@@ -117,11 +117,11 @@ if %errorlevel% equ 0 (
 
 :: Run the container with error handling
 echo Starting container...
-docker run -d -p 5000:5000 --name password-manager vickm81/pass-man
+docker run -d -p 8080:8080 --name password-manager vickm81/pass-man
 if %errorlevel% neq 0 (
     echo.
     echo ❌ Failed to start the container. Please check that:
-    echo   1. Port 5000 is not already in use
+    echo   1. Port 8080 is not already in use
     echo   2. Docker has sufficient permissions
     echo   3. Docker Desktop is running correctly
     echo.
@@ -129,5 +129,5 @@ if %errorlevel% neq 0 (
     exit /b
 )
 echo.
-echo ✅ Your password manager is now running at: http://localhost:5000
+echo ✅ Your password manager is now running at: http://localhost:8080
 pause

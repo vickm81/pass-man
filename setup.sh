@@ -73,6 +73,6 @@ docker pull vickm81/pass-man
 
 # Run the Docker image
 echo "Running Docker image"
-docker run -p 5000:5000 vickm81/pass-man
+docker run -p 8080:8080 vickm81/pass-man
 
 echo "Done!"
